@@ -103,6 +103,44 @@ function validateEntry(entry) {
   if (!("title" in entry) || !entry.title || entry.title === "Unknown") {
     isValid = false;
   }
-
+  if (!("author" in entry) || !entry.author || entry.author === "Unknown") {
+    isValid = false;
+  }
+  if (!("year" in entry) || !entry.year || entry.year === "Unknown") {
+    isValid = false;
+  }
+  if (!("location" in entry) || !entry.location || entry.location === "Unknown") {
+    isValid = false;
+  }
   return isValid;
+}
+
+function exportToJSON(catalog) {
+  return JSON.stringify(catalog, null, 2);
+}
+
+function exportToCSV(catalog) {
+  const header = "Title,Author,Year,Location";
+  const rows = [];
+  for (let i = 0; i < catalog.length; i++) {
+    const entry = catalog[i];
+    rows.push(`"${entry.title}","${entry.author}",${entry.year},"${entry.location}"`);
+  }
+  let csv = header;
+  for (let i = 0; i < rows.length; i++) {
+    csv = csv + "\n" + rows[i];
+  }
+  return csv;
+}
+
+console.log(exportToCSV(catalog));
+
+console.log(catalog.length) 
+console.log(Object.keys(byDecade).length);
+
+let oldestYear = Infinity;
+let newestYear = 0;
+
+for (let i = 0; i < catalog; i++) {
+  
 }
