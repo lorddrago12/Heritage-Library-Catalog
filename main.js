@@ -15,7 +15,6 @@ const rawCatalogCards = [
   "The Hitchhiker's Guide to the Galaxy | Adams, Douglas | 1979 | Shelf A1",
   "Ready Player One | Cline, Ernest | 2011 | Shelf C7",
   "The Dark Tower: The Gunslinger | King, Stephen | 1982 | Shelf K5",
-  // edge cases: missing data
   "Unknown Title |  | 1975 | Shelf X1",
   "Mysterious Manuscript | Unknown Author |  | Shelf Z9",
   "Ancient Scroll | Anonymous | 850 | ",
@@ -27,10 +26,12 @@ function parseCard(rawString) {
   for (let i = 0; i < parts.length; i++) {
     trimmedParts.push(parts[i].trim());
   }
+
   const title = trimmedParts[0];
   const author = trimmedParts[1];
   const year = trimmedParts[2];
   const location = trimmedParts[3];
+
   return {
     title: title || "Unknown",
     author: author || "Unknown",
@@ -64,6 +65,7 @@ function groupByDecade(catalog) {
   const grouped = {};
   for (let i = 0; i < catalog.length; i++) {
     const book = catalog[i];
+
     if (book.year === "Unknown") {
       if (!grouped["Unknown"]) {
         grouped["Unknown"] = [];
@@ -71,11 +73,14 @@ function groupByDecade(catalog) {
       grouped["Unknown"].push(book);
       continue;
     }
+
     const decade = Math.floor(book.year / 10) * 10;
     const decadeKey = `${decade}s`;
+
     if (!grouped[decadeKey]) {
       grouped[decadeKey] = [];
     }
+
     grouped[decadeKey].push(book);
   }
   return grouped;
@@ -88,6 +93,7 @@ function renderEntry(entry) {
   const author = entry.author || "Unknown";
   const year = entry.year || "Unknown";
   const location = entry.location || "Unknown";
+
   return `${"-".repeat(25)}
 Title: ${title}
 Author: ${author}
@@ -100,18 +106,20 @@ console.log(renderEntry(catalog[0]));
 
 function validateEntry(entry) {
   let isValid = true;
-  if (!("title" in entry) || !entry.title || entry.title === "Unknown") {
+
+  if (!entry.title || entry.title === "Unknown") {
     isValid = false;
   }
-  if (!("author" in entry) || !entry.author || entry.author === "Unknown") {
+  if (!entry.author || entry.author === "Unknown") {
     isValid = false;
   }
-  if (!("year" in entry) || !entry.year || entry.year === "Unknown") {
+  if (!entry.year || entry.year === "Unknown") {
     isValid = false;
   }
-  if (!("location" in entry) || !entry.location || entry.location === "Unknown") {
+  if (!entry.location || entry.location === "Unknown") {
     isValid = false;
   }
+
   return isValid;
 }
 
@@ -122,25 +130,42 @@ function exportToJSON(catalog) {
 function exportToCSV(catalog) {
   const header = "Title,Author,Year,Location";
   const rows = [];
+
   for (let i = 0; i < catalog.length; i++) {
     const entry = catalog[i];
     rows.push(`"${entry.title}","${entry.author}",${entry.year},"${entry.location}"`);
   }
+
   let csv = header;
   for (let i = 0; i < rows.length; i++) {
-    csv = csv + "\n" + rows[i];
+    csv += "\n" + rows[i];
   }
+
   return csv;
 }
 
 console.log(exportToCSV(catalog));
 
-console.log(catalog.length) 
+console.log(catalog.length);
 console.log(Object.keys(byDecade).length);
 
+// SUMMARY CALCULATION
 let oldestYear = Infinity;
 let newestYear = 0;
 
-for (let i = 0; i < catalog; i++) {
-  
+for (let i = 0; i < catalog.length; i++) {
+  const entry = catalog[i];
+
+  if (entry.year !== "Unknown") {
+    if (entry.year < oldestYear) {
+      oldestYear = entry.year;
+    }
+    if (entry.year > newestYear) {
+      newestYear = entry.year;
+    }
+  }
 }
+
+// REQUIRED LOGS
+console.log(oldestYear);
+console.log(newestYear);
